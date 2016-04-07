@@ -1,0 +1,938 @@
+{
+  "Description": "GoCD",
+  "Parameters": {
+    "VPCCIDR": {
+      "Type": "String",
+      "Default": "10.23.0.0/16"
+    },
+    "PublicSubnetCIDR": {
+      "Type": "String",
+      "Default": "10.23.0.0/20"
+    },
+    "PrivateSubnetCIDR1": {
+      "Type": "String",
+      "Default": "10.23.16.0/20"
+    },
+    "PrivateSubnetCIDR2": {
+      "Type": "String",
+      "Default": "10.23.32.0/20"
+    },
+    "PrivateSubnetCIDR3": {
+      "Type": "String",
+      "Default": "10.23.48.0/20"
+    },
+    "InstanceTypeMaster": {
+      "Description": "GoCD Server instance type",
+      "Type": "String",
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large",
+        "m4.large",
+        "m4.xlarge"
+      ],
+      "Default": "t2.medium",
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+    "InstanceTypeAgent": {
+      "Description": "GoCD Agent instance type",
+      "Type": "String",
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large",
+        "m4.large",
+        "m4.xlarge"
+      ],
+      "Default": "t2.large",
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+    "AgentDesiredCapacity": {
+      "Description": "The number of Agent instances to have during normal working hours",
+      "Type": "Number",
+      "MinValue": "1",
+      "MaxValue": "30",
+      "Default": "1"
+    },
+    "SSHKeyName": {
+      "Description": "Name of an existing EC2 KeyPair to allow SSH access to the instance",
+      "Type": "String",
+      "MinLength": 1,
+      "MaxLength": 255,
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "Default": "zero2porter",
+      "ConstraintDescription": "can contain only ASCII characters."
+    }
+  },
+  "Mappings": {
+    "RegionToAmazonLinuxAMI": {
+      "ap-northeast-1": {
+        "Key": "ami-1c1b9f1c"
+      },
+      "ap-southeast-1": {
+        "Key": "ami-d44b4286"
+      },
+      "ap-southeast-2": {
+        "Key": "ami-db7b39e1"
+      },
+      "eu-central-1": {
+        "Key": "ami-a6b0b7bb"
+      },
+      "eu-west-1": {
+        "Key": "ami-e4d18e93"
+      },
+      "sa-east-1": {
+        "Key": "ami-55098148"
+      },
+      "us-east-1": {
+        "Key": "ami-0d4cfd66"
+      },
+      "us-west-1": {
+        "Key": "ami-87ea13c3"
+      },
+      "us-west-2": {
+        "Key": "ami-d5c5d1e5"
+      }
+    }
+  },
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": {
+          "Ref": "VPCCIDR"
+        },
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD"
+          }
+        ]
+      }
+    },
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD public"
+          }
+        ]
+      }
+    },
+    "PrivateRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD private"
+          }
+        ]
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD ig"
+          }
+        ]
+      }
+    },
+    "EIP": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "NatGateway": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "EIP",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        }
+      }
+    },
+    "InternetGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "DefaultPublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        }
+      }
+    },
+    "DefaultPrivateRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "NatGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        }
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Ref": "PublicSubnetCIDR"
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD public"
+          }
+        ]
+      }
+    },
+    "PrivateSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Ref": "PrivateSubnetCIDR1"
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD private"
+          }
+        ]
+      }
+    },
+    "PrivateSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Ref": "PrivateSubnetCIDR2"
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD private"
+          }
+        ]
+      }
+    },
+    "PrivateSubnet3": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            2,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": {
+          "Ref": "PrivateSubnetCIDR3"
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "GoCD private"
+          }
+        ]
+      }
+    },
+    "PublicSubnetRoute": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        }
+      }
+    },
+    "PrivateSubnet1Route": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnet1"
+        }
+      }
+    },
+    "PrivateSubnet2Route": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnet2"
+        }
+      }
+    },
+    "PrivateSubnet3Route": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnet3"
+        }
+      }
+    },
+    "GOMasterSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow TCP 8153 from GO Agents and ELB",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8153,
+            "ToPort": 8153,
+            "SourceSecurityGroupId": {
+              "Ref": "ELBSecurityGroup"
+            }
+          }
+        ]
+      }
+    },
+    "SSHSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "SSH",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 22,
+            "IpProtocol": "tcp",
+            "ToPort": 22
+          }
+        ]
+      }
+    },
+    "ELBSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "HTTP",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ]
+      }
+    },
+    "ApplicationLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "DependsOn": [
+        "InternetGatewayAttachment"
+      ],
+      "Properties": {
+        "Subnets": [
+          {
+            "Ref": "PublicSubnet"
+          }
+        ],
+        "ConnectionDrainingPolicy": {
+          "Enabled": true,
+          "Timeout": 300
+        },
+        "Listeners": [
+          {
+            "InstancePort": 8153,
+            "LoadBalancerPort": 80,
+            "Protocol": "HTTP"
+          }
+        ],
+        "SecurityGroups": [
+          {
+            "Ref": "ELBSecurityGroup"
+          }
+        ]
+      }
+    },
+    "GoCDMasterAutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "PublicSubnet"
+          }
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "GoCDMasterAutoScalingLaunchConfiguration"
+        },
+        "LoadBalancerNames": [
+          {
+            "Ref": "ApplicationLoadBalancer"
+          }
+        ],
+        "MaxSize": "1",
+        "MinSize": "1",
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "GoCD Master"
+          },
+          {
+            "Key": "GoCDMaster",
+            "PropagateAtLaunch": true,
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    "GoCDAgentsAutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          },
+          {
+            "Ref": "PrivateSubnet3"
+          }
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "GoCDAgentAutoScalingLaunchConfiguration"
+        },
+        "MaxSize": {
+          "Ref": "AgentDesiredCapacity"
+        },
+        "DesiredCapacity": {
+          "Ref": "AgentDesiredCapacity"
+        },
+        "TerminationPolicies": [
+          "OldestInstance"
+        ],
+        "MinSize": "1",
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "GoCD Agent"
+          }
+        ]
+      }
+    },
+    "GoCDMasterAutoScalingLaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "DependsOn": [
+        "InternetGatewayAttachment"
+      ],
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "cfnMasterStep0": [
+              "installServer"
+            ],
+            "cfnMasterStep1": [
+              "configAndStartServer"
+            ]
+          },
+          "installServer": {
+            "commands": {
+              "1installServer": {
+                "command": "[[ -f /etc/init.d/go-server ]] || rpm -i /go-server.noarch.rpm"
+              },
+              "2stopServer": {
+                "command": "service go-server stop"
+              }
+            },
+            "files": {
+              "/go-server.noarch.rpm": {
+                "source": "https://download.go.cd/binaries/16.3.0-3183/rpm/go-server-16.3.0-3183.noarch.rpm",
+                "group": "root",
+                "mode": "000644",
+                "owner": "root"
+              }
+            }
+          },
+          "configAndStartServer": {
+            "commands": {
+              "startServer": {
+                "command": "service go-server start"
+              }
+            },
+            "files": {
+              "/etc/go/cruise-config.xml": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+                      "<cruise xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"cruise-config.xsd\" schemaVersion=\"81\">",
+                      "  <server artifactsdir=\"artifacts\" commandRepositoryLocation=\"default\" serverId=\"6335d7f3-5c72-410c-865a-d92067e9d693\" purgeStart=\"10.0\" purgeUpto=\"50.0\" agentAutoRegisterKey=\"dcf16b5c94ba9fccbc428949d940cc76\" />",
+                      "</cruise>"
+                    ]
+                  ]
+                },
+                "group": "go",
+                "mode": "000664",
+                "owner": "go"
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "AssociatePublicIpAddress": true,
+        "InstanceMonitoring": false,
+        "IamInstanceProfile": {
+          "Ref": "IAMInstanceProfile"
+        },
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionToAmazonLinuxAMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            "Key"
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceTypeMaster"
+        },
+        "KeyName": {
+          "Ref": "SSHKeyName"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "SSHSecurityGroup"
+          },
+          {
+            "Ref": "GOMasterSecurityGroup"
+          },
+          {
+            "Fn::GetAtt": [
+              "VPC",
+              "DefaultSecurityGroup"
+            ]
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#cloud-config\n",
+                "repo_upgrade: security\n",
+                "repo_releasever: 2015.03\n",
+                "\n",
+                "packages:\n",
+                "  - git-daemon\n",
+                "\n",
+                "runcmd:\n",
+                "  - echo running cfn-init -c cfnMasterStep0,cfnMasterStep1\n",
+                "  - /opt/aws/bin/cfn-init -c cfnMasterStep0,cfnMasterStep1",
+                " --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                " --stack ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                " -r GoCDMasterAutoScalingLaunchConfiguration\n",
+                "\n"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "GoCDAgentAutoScalingLaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "DependsOn": [
+        "GoCDMasterAutoScalingGroup",
+        "NatGateway"
+      ],
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "cfnAgentStep0": [
+              "installAgent"
+            ],
+            "cfnAgentStep1": [
+              "dockerSetup",
+              "configureGit",
+              "agentFirstRunAndUnpack"
+            ],
+            "cfnAgentStep2": [
+              "agentAutoregisterConfig"
+            ]
+          },
+          "installAgent": {
+            "commands": {
+              "installAgent": {
+                "command": "rpm -i /go-agent.noarch.rpm"
+              }
+            },
+            "files": {
+              "/go-agent.noarch.rpm": {
+                "source": "https://download.go.cd/binaries/16.3.0-3183/rpm/go-agent-16.3.0-3183.noarch.rpm",
+                "group": "root",
+                "mode": "000644",
+                "owner": "root"
+              },
+              "/usr/bin/go_download_porter": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "#!/bin/bash -e",
+                      "#",
+                      "# This script will be used by CI servers to download the version of porter",
+                      "# defined in user config file ./porter/config or the script downloads the latest.",
+                      "#",
+                      "#",
+                      "VERSION=$(perl -wne 'print \"v$2\" if /porter_version(:| =) \\\"?v(([A-Z]|[0-9]|\\.)+)/' $1)",
+                      "echo \"Porter Version to download $VERSION\"",
+                      "curl -o porter --compressed -s https://s3-us-west-2.amazonaws.com/porter-builds/$VERSION/porter_linux386 && chmod +x !#:2",
+                      "echo \"porter version $(./porter version)\""
+                    ]
+                  ]
+                },
+                "group": "root",
+                "mode": "000755",
+                "owner": "root"
+              }
+            }
+          },
+          "agentFirstRunAndUnpack": {
+            "commands": {
+              "go_initialize_agent": {
+                "command": "/usr/bin/go_initialize_agent"
+              }
+            },
+            "files": {
+              "/usr/bin/go_initialize_agent": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "curl -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x !#:2",
+                      "JQ_FILTER='.Reservations[0].Instances[0].NetworkInterfaces[0].PrivateIpAddresses[0].PrivateIpAddress'",
+                      "MASTER_IP=$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=GoCD Master' | jq -r $JQ_FILTER)",
+                      "sed -i -e \"s/GO_SERVER=127.0.0.1/GO_SERVER=$MASTER_IP/\" /etc/default/go-agent",
+                      "service go-agent start",
+                      "service go-agent stop"
+                    ]
+                  ]
+                },
+                "group": "root",
+                "mode": "000755",
+                "owner": "root"
+              }
+            }
+          },
+          "agentAutoregisterConfig": {
+            "commands": {
+              "restartAgent": {
+                "command": "service go-agent start"
+              }
+            },
+            "files": {
+              "/var/lib/go-agent/config/autoregister.properties": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "agent.auto.register.key=dcf16b5c94ba9fccbc428949d940cc76"
+                    ]
+                  ]
+                },
+                "group": "go",
+                "mode": "000644",
+                "owner": "go"
+              }
+            }
+          },
+          "configureGit": {
+            "files": {
+              "/var/go/.gitconfig": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "[user]",
+                      "        name = nobody",
+                      "        email = noreply@nowhere.com",
+                      "[push]",
+                      "        default = simple"
+                    ]
+                  ]
+                },
+                "group": "go",
+                "mode": "000644",
+                "owner": "go"
+              }
+            }
+          },
+          "dockerSetup": {
+            "commands": {
+              "dockerSetup": {
+                "command": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "usermod -G go,wheel,docker go",
+                      "service docker restart"
+                    ]
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#cloud-config\n",
+                "repo_upgrade: security\n",
+                "repo_releasever: 2015.03\n",
+                "\n",
+                "packages:\n",
+                "  - git\n",
+                "  - docker\n",
+                "\n",
+                "runcmd:\n",
+                "  - echo running cfn-init -c cfnAgentStep0,cfnAgentStep1,cfnAgentStep2\n",
+                "  - /opt/aws/bin/cfn-init -c cfnAgentStep0,cfnAgentStep1,cfnAgentStep2",
+                " --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                " --stack ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                " -r GoCDAgentAutoScalingLaunchConfiguration",
+                "\n"
+              ]
+            ]
+          }
+        },
+        "AssociatePublicIpAddress": false,
+        "InstanceMonitoring": false,
+        "IamInstanceProfile": {
+          "Ref": "IAMInstanceProfile"
+        },
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionToAmazonLinuxAMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            "Key"
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceTypeAgent"
+        },
+        "KeyName": {
+          "Ref": "SSHKeyName"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "SSHSecurityGroup"
+          },
+          {
+            "Fn::GetAtt": [
+              "VPC",
+              "DefaultSecurityGroup"
+            ]
+          }
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": "100",
+              "VolumeType": "gp2"
+            }
+          }
+        ]
+      }
+    },
+    "ScheduledActionUp": {
+      "Type": "AWS::AutoScaling::ScheduledAction",
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "GoCDAgentsAutoScalingGroup"
+        },
+        "MaxSize": {
+          "Ref": "AgentDesiredCapacity"
+        },
+        "DesiredCapacity": {
+          "Ref": "AgentDesiredCapacity"
+        },
+        "MinSize": "1",
+        "Recurrence": "0 16 * * 1-5"
+      }
+    },
+    "ScheduledActionDown": {
+      "Type": "AWS::AutoScaling::ScheduledAction",
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "GoCDAgentsAutoScalingGroup"
+        },
+        "MaxSize": "1",
+        "MinSize": "1",
+        "Recurrence": "0 2 * * *"
+      }
+    },
+    "IAMRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "ec2:DescribeInstances",
+                    "sts:AssumeRole"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ]
+            },
+            "PolicyName": "build-box"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "IAMInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "IAMRole"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ElbDns": {
+    	"Description": "GoCD master ELB",
+      "Value": {
+        "Fn::GetAtt": [
+          "ApplicationLoadBalancer",
+          "DNSName"
+        ]
+      }
+    }
+  }
+}
