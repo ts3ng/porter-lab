@@ -1,0 +1,25 @@
+service_name: porter-lab-00
+
+porter_version: v0.62.1
+
+containers:
+- topology: inet
+
+environments:
+- name: dev
+
+  instance_type: m3.medium
+
+  regions:
+  - name: us-west-2
+
+    azs:
+    - name: us-west-2a
+    - name: us-west-2b
+    - name: us-west-2c
+
+    role_arn: arn:aws:iam::540901823010:role/porter-lab-00
+    s3_bucket: porter-lab-00-us-west-2
+    key_pair_name: porter-lab
+
+    elb: porter-lab-00
