@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const port = 3000
+const port = "3000"
 
 func Health(w http.ResponseWriter, r *http.Request) {
 }
@@ -29,6 +29,6 @@ func main() {
 	http.HandleFunc("/hello", HelloWorld)
 	http.HandleFunc("/log", Log)
 
-	fmt.Printf("listening on %d\n", port)
-	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	fmt.Println("listening on port ", port)
+	http.ListenAndServe(":"+port, nil)
 }

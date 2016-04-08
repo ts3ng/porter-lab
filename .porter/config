@@ -9,6 +9,7 @@ environments:
 - name: dev
 
   instance_type: m3.medium
+  stack_definition_path: .porter/cfn.json
 
   regions:
   - name: us-west-2
