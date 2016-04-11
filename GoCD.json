@@ -62,7 +62,7 @@
       "MinLength": 1,
       "MaxLength": 255,
       "AllowedPattern": "[\\x20-\\x7E]*",
-      "Default": "zero2porter",
+      "Default": "porter-lab",
       "ConstraintDescription": "can contain only ASCII characters."
     }
   },
@@ -597,6 +597,15 @@
             ]
           }
         ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": "500",
+              "VolumeType": "gp2"
+            }
+          }
+        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -662,7 +671,7 @@
                 "mode": "000644",
                 "owner": "root"
               },
-              "/usr/bin/go_download_porter": {
+              "/usr/bin/download_porter": {
                 "content": {
                   "Fn::Join": [
                     "\n",
@@ -673,10 +682,10 @@
                       "# defined in user config file ./porter/config or the script downloads the latest.",
                       "#",
                       "#",
-                      "VERSION=$(perl -wne 'print \"v$2\" if /porter_version(:| =) \\\"?v(([A-Z]|[0-9]|\\.)+)/' $1)",
-                      "echo \"Porter Version to download $VERSION\"",
-                      "curl -o porter --compressed -s https://s3-us-west-2.amazonaws.com/porter-builds/$VERSION/porter_linux386 && chmod +x !#:2",
-                      "echo \"porter version $(./porter version)\""
+                      "VERSION=$(perl -wne 'print \"v$1\" if /porter_version: \\\"?v(([A-Z]|[0-9]|\\.)+)/' $1)",
+                      "echo \"Downloading porter $VERSION\"",
+                      "curl -o porter --compressed -s https://s3-us-west-2.amazonaws.com/porter-builds/$VERSION/porter_linux386",
+                      "chmod 555 ./porter"
                     ]
                   ]
                 },
@@ -696,13 +705,20 @@
               "/usr/bin/go_initialize_agent": {
                 "content": {
                   "Fn::Join": [
-                    "\n",
+                    "",
                     [
-                      "curl -o jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x !#:2",
-                      "JQ_FILTER='.Reservations[0].Instances[0].NetworkInterfaces[0].PrivateIpAddresses[0].PrivateIpAddress'",
-                      "MASTER_IP=$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=GoCD Master' | jq -r $JQ_FILTER)",
-                      "sed -i -e \"s/GO_SERVER=127.0.0.1/GO_SERVER=$MASTER_IP/\" /etc/default/go-agent",
-                      "service go-agent start",
+                      "export AWS_DEFAULT_REGION=",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "\n",
+                      "curl -Lo /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64\n",
+                      "chmod 755 /usr/bin/jq\n",
+                      "MASTER_IP=$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=GoCD Master'",
+                      " | jq '.Reservations | map(select(.Instances[0].State.Name == \"running\"))[0]'",
+                      " | jq -r '.Instances[0].NetworkInterfaces[0].PrivateIpAddresses[0].PrivateIpAddress')\n",
+                      "sed -i -e \"s/GO_SERVER=127.0.0.1/GO_SERVER=$MASTER_IP/\" /etc/default/go-agent\n",
+                      "service go-agent start\n",
                       "service go-agent stop"
                     ]
                   ]
@@ -926,7 +942,7 @@
   },
   "Outputs": {
     "ElbDns": {
-    	"Description": "GoCD master ELB",
+      "Description": "GoCD master ELB",
       "Value": {
         "Fn::GetAtt": [
           "ApplicationLoadBalancer",
