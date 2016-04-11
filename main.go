@@ -9,6 +9,7 @@ import (
 const port = "3000"
 
 func Health(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(204)
 }
 
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
