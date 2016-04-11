@@ -26,6 +26,8 @@ func main() {
 		fmt.Println(kvp)
 	}
 
+	panic("oh snap! better call brandon")
+
 	http.HandleFunc("/health", Health)
 	http.HandleFunc("/hello", HelloWorld)
 	http.HandleFunc("/log", Log)
