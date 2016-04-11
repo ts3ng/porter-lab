@@ -1,4 +1,4 @@
-service_name: porter-lab-00
+service_name: porter-lab-23
 
 porter_version: v0.62.1
 
@@ -18,8 +18,8 @@ environments:
     - name: us-west-2b
     - name: us-west-2c
 
-    role_arn: arn:aws:iam::540901823010:role/porter-lab-00
+    role_arn: arn:aws:iam::540901823010:role/porter-lab-23
     s3_bucket: porter-lab-us-west-2
     key_pair_name: porter-lab
 
-    elb: porter-lab-00
+    elb: porter-lab-23
