@@ -1,6 +1,6 @@
 service_name: porter-lab-29
 
-porter_version: v0.62.1
+porter_version: v0.63.0
 
 containers:
 - topology: inet
