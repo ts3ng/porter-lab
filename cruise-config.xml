@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="81">
-  <server artifactsdir="artifacts" purgeStart="2.0" purgeUpto="50.0" agentAutoRegisterKey="dcf16b5c94ba9fccbc428949d940cc76" commandRepositoryLocation="default" serverId="6335d7f3-5c72-410c-865a-d92067e9d693" />
+  <server artifactsdir="artifacts" purgeStart="10.0" purgeUpto="50.0" agentAutoRegisterKey="dcf16b5c94ba9fccbc428949d940cc76" commandRepositoryLocation="default" serverId="6335d7f3-5c72-410c-865a-d92067e9d693" />
   <pipelines group="porter-lab-00">
     <pipeline name="porter-lab-00-pack" template="Porter-Pack">
       <materials>
@@ -14,6 +14,646 @@
       </params>
       <materials>
         <pipeline pipelineName="porter-lab-00-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-01">
+    <pipeline name="porter-lab-01-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-01" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-01-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-01-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-01-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-02">
+    <pipeline name="porter-lab-02-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-02" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-02-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-02-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-02-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-03">
+    <pipeline name="porter-lab-03-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-03" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-03-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-03-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-03-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-04">
+    <pipeline name="porter-lab-04-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-04" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-04-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-04-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-04-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-05">
+    <pipeline name="porter-lab-05-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-05" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-05-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-05-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-05-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-06">
+    <pipeline name="porter-lab-06-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-06" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-06-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-06-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-06-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-07">
+    <pipeline name="porter-lab-07-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-07" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-07-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-07-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-07-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-08">
+    <pipeline name="porter-lab-08-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-08" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-08-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-08-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-08-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-09">
+    <pipeline name="porter-lab-09-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-09" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-09-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-09-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-09-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-10">
+    <pipeline name="porter-lab-10-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-10" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-10-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-10-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-10-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-11">
+    <pipeline name="porter-lab-11-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-11" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-11-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-11-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-11-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-12">
+    <pipeline name="porter-lab-12-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-12" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-12-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-12-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-12-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-13">
+    <pipeline name="porter-lab-13-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-13" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-13-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-13-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-13-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-14">
+    <pipeline name="porter-lab-14-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-14" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-14-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-14-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-14-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-15">
+    <pipeline name="porter-lab-15-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-15" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-15-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-15-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-15-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-16">
+    <pipeline name="porter-lab-16-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-16" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-16-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-16-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-16-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-17">
+    <pipeline name="porter-lab-17-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-17" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-17-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-17-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-17-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-18">
+    <pipeline name="porter-lab-18-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-18" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-18-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-18-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-18-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-19">
+    <pipeline name="porter-lab-19-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-19" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-19-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-19-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-19-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-20">
+    <pipeline name="porter-lab-20-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-20" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-20-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-20-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-20-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-21">
+    <pipeline name="porter-lab-21-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-21" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-21-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-21-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-21-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-22">
+    <pipeline name="porter-lab-22-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-22" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-22-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-22-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-22-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-23">
+    <pipeline name="porter-lab-23-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-23" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-23-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-23-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-23-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-24">
+    <pipeline name="porter-lab-24-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-24" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-24-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-24-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-24-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-25">
+    <pipeline name="porter-lab-25-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-25" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-25-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-25-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-25-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-26">
+    <pipeline name="porter-lab-26-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-26" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-26-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-26-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-26-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-27">
+    <pipeline name="porter-lab-27-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-27" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-27-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-27-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-27-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-28">
+    <pipeline name="porter-lab-28-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-28" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-28-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-28-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-28-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-29">
+    <pipeline name="porter-lab-29-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-29" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-29-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-29-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-29-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-30">
+    <pipeline name="porter-lab-30-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-30" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-30-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-30-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-30-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-31">
+    <pipeline name="porter-lab-31-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-31" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-31-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-31-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-31-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-32">
+    <pipeline name="porter-lab-32-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-32" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-32-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-32-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-32-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-33">
+    <pipeline name="porter-lab-33-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-33" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-33-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-33-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-33-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-34">
+    <pipeline name="porter-lab-34-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-34" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-34-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-34-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-34-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-35">
+    <pipeline name="porter-lab-35-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-35" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-35-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-35-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-35-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-36">
+    <pipeline name="porter-lab-36-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-36" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-36-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-36-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-36-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-37">
+    <pipeline name="porter-lab-37-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-37" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-37-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-37-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-37-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-38">
+    <pipeline name="porter-lab-38-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-38" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-38-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-38-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-38-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-39">
+    <pipeline name="porter-lab-39-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-39" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-39-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-39-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-39-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <pipelines group="porter-lab-40">
+    <pipeline name="porter-lab-40-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-40" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-40-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-40-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-40-pack" stageName="Pack" />
       </materials>
     </pipeline>
   </pipelines>
@@ -139,7 +779,7 @@
     </pipeline>
   </templates>
   <agents>
-    <agent hostname="ip-10-24-25-7" ipaddress="10.24.25.7" uuid="b835d36a-1d82-467a-88c9-0e4174378311" />
+    <agent hostname="ip-10-23-37-165" ipaddress="10.23.37.165" uuid="11a7c2f6-ffb7-4e37-a2f6-8213a1a17e7d" />
   </agents>
 </cruise>
 
