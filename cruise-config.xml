@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="81">
   <server artifactsdir="artifacts" purgeStart="10.0" purgeUpto="50.0" agentAutoRegisterKey="dcf16b5c94ba9fccbc428949d940cc76" commandRepositoryLocation="default" serverId="6335d7f3-5c72-410c-865a-d92067e9d693" />
+  <pipelines group="porter-lab-debug">
+    <pipeline name="porter-lab-debug-pack" template="Porter-Pack">
+      <materials>
+        <git url="https://github.com/adobe-platform/porter-lab.git" branch="lab-debug" shallowClone="true" />
+      </materials>
+    </pipeline>
+    <pipeline name="porter-lab-debug-deploy" template="Porter-Deploy">
+      <params>
+        <param name="pack_pipeline">porter-lab-debug-pack</param>
+        <param name="porter_env">dev</param>
+      </params>
+      <materials>
+        <pipeline pipelineName="porter-lab-debug-pack" stageName="Pack" />
+      </materials>
+    </pipeline>
+  </pipelines>
   <pipelines group="porter-lab-00">
     <pipeline name="porter-lab-00-pack" template="Porter-Pack">
       <materials>
