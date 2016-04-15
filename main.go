@@ -9,7 +9,7 @@ import (
 const port = "3000"
 
 func Health(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(204)
+	// default is a 200 response
 }
 
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
